@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, fromEvent } from 'rxjs';
-import { startWith, map, mergeMap, concatMap, switchMap } from 'rxjs/operators';
+import { startWith, map, mergeMap, concatMap, switchMap, debounceTime } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -30,6 +30,8 @@ export class AppComponent implements OnInit {
 
     this.results$ = fromEvent(document.getElementById('txt'), 'keyup')
       .pipe(
+        startWith(''),
+        debounceTime(800),
         map(v => (v?.target as HTMLInputElement)?.value),
         switchMap(criteria =>
           this.http.get(`https://jsonplaceholder.typicode.com/users?${criteria ? `name=${criteria}` : '' }`)
