@@ -31,7 +31,7 @@ export class AppComponent implements OnInit {
     this.results$ = fromEvent(document.getElementById('txt'), 'keyup')
       .pipe(
         map(v => (v?.target as HTMLInputElement)?.value),
-        switchMap(criteria =>
+        mergeMap(criteria =>
           this.http.get(`https://jsonplaceholder.typicode.com/users?${criteria ? `name=${criteria}` : '' }`)
         )
       );
