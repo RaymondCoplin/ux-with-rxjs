@@ -1,44 +1,35 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, fromEvent } from 'rxjs';
-import { startWith, map, mergeMap, concatMap, switchMap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { exhaustMap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   template: `
     <div>
-      <label for="txt">Filtro:</label>
-      <input id="txt" name="txt" type="text" placeholder="Ingrese un texto" />
-    </div>
-    <br />
-    <div *ngIf="results$ | async as users">
-      <b>Resultados ({{ users.length }})</b>
-      <ol>
-        <li *ngFor="let user of users">{{ user.name }}</li>
-      </ol>
+      <button (click)="onSubmit()">Submit</button>
     </div>
   `,
   styles: []
 })
 export class AppComponent implements OnInit {
 
-  results$: Observable<any>;
+  click$ = new Subject();
 
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
 
-    this.results$ = fromEvent(document.getElementById('txt'), 'keyup')
-      .pipe(
-        startWith(''),
-        debounceTime(800),
-        map((v: Event) => (v?.target as HTMLInputElement)?.value),
-        distinctUntilChanged(),
-        switchMap(criteria =>
-          this.http.get(`https://jsonplaceholder.typicode.com/users?${criteria ? `name=${criteria}` : '' }`)
-        )
-      );
+    this.click$.pipe(
+      exhaustMap(_ =>
+        this.http.get(`https://jsonplaceholder.typicode.com/users`)
+      )
+    ).subscribe();
 
+  }
+
+  onSubmit() {
+    this.click$.next('click');
   }
 
 }

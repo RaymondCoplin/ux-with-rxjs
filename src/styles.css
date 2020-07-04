@@ -47,5 +47,4 @@ button {
   height: 32px;
   outline: none;
   border: 0.5px var(--primary) dashed;
-  border-left: none;
 }
