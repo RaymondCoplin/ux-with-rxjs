@@ -1,22 +1,29 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, fromEvent } from 'rxjs';
+import { startWith, map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   template: `
-    
+    <div>
+      <label for="txt">Filtro:</label>
+      <input id="txt" name="txt" type="text" placeholder="Ingrese un texto" />
+    </div>
   `,
   styles: []
 })
 export class AppComponent implements OnInit {
 
+  constructor(private http: HttpClient) { }
+
   ngOnInit() {
-    
-    const myObservable = Observable.create((producer) => {
-      setTimeout(() => producer.next('Emision 1'), 1000);
-      setTimeout(() => producer.next('Emision 2'), 2000);
-      setTimeout(() => producer.next('Emision 3'), 3000);
-    });
+
+    fromEvent(document.getElementById('txt'), 'keyup')
+      .pipe(
+        map(v => (v?.target as HTMLInputElement)?.value)
+      )
+      .subscribe(value => console.log(value));
 
   }
 
